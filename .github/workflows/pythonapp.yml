@@ -1,4 +1,4 @@
-name: Python application
+name: AIOps2020 judge
 
 on: [push, pull_request]
 
