@@ -8,7 +8,7 @@ import os
 import warnings
 
 
-class Answer():
+class Answer():  # pylint: disable=too-few-public-methods
     '''Structure of ground truth'''
 
     __slots__ = ['category', 'cmdb_id', 'candidates']
@@ -19,7 +19,7 @@ class Answer():
         self.candidates = set(candidates)
 
 
-class Result():
+class Result():  # pylint: disable=too-few-public-methods
     '''Structure of submitted answer'''
 
     __slots__ = ['category', 'cmdb_id', 'index']
