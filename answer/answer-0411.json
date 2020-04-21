@@ -1,0 +1,82 @@
+{
+    "1": [
+        "docker",
+        "docker_003",
+        [
+            "container_cpu_used"
+        ]
+    ],
+    "2": [
+        "docker",
+        "docker_002",
+        [
+            null
+        ]
+    ],
+    "3": [
+        "docker",
+        "docker_001",
+        [
+            null
+        ]
+    ],
+    "4": [
+        "docker",
+        "docker_004",
+        [
+            "container_cpu_used"
+        ]
+    ],
+    "5": [
+        "oracle",
+        "db_007",
+        [
+            "Proc_User_Used_Pct",
+            "Proc_Used_Pct",
+            "Sess_Connect"
+        ]
+    ],
+    "6": [
+        "docker",
+        "docker_002",
+        [
+            "container_cpu_used"
+        ]
+    ],
+    "7": [
+        "docker",
+        "docker_003",
+        [
+            null
+        ]
+    ],
+    "8": [
+        "docker",
+        "docker_003",
+        [
+            null
+        ]
+    ],
+    "9": [
+        "docker",
+        "docker_008",
+        [
+            "container_cpu_used"
+        ]
+    ],
+    "10": [
+        "docker",
+        "docker_007",
+        [
+            null
+        ]
+    ],
+    "11": [
+        "oracle",
+        "db_003",
+        [
+            "On_Off_State",
+            "tnsping_result_time"
+        ]
+    ]
+}
