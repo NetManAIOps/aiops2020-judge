@@ -8,15 +8,21 @@ import os
 import warnings
 
 
+def _upper(item):
+    if isinstance(item, str):
+        return item.upper()
+    return item
+
+
 class Answer():  # pylint: disable=too-few-public-methods
     '''Structure of ground truth'''
 
     __slots__ = ['category', 'cmdb_id', 'candidates']
 
     def __init__(self, category, cmdb_id, candidates):
-        self.category = category
-        self.cmdb_id = cmdb_id
-        self.candidates = set(candidates)
+        self.category = category.upper()
+        self.cmdb_id = cmdb_id.upper()
+        self.candidates = {_upper(candidate) for candidate in candidates}
 
 
 class Result():  # pylint: disable=too-few-public-methods
@@ -25,9 +31,9 @@ class Result():  # pylint: disable=too-few-public-methods
     __slots__ = ['category', 'cmdb_id', 'index']
 
     def __init__(self, category, cmdb_id, index):
-        self.category = category
-        self.cmdb_id = cmdb_id
-        self.index = index
+        self.category = category.upper()
+        self.cmdb_id = cmdb_id.upper()
+        self.index = _upper(index)
 
     def is_correct(self, answer):
         '''
