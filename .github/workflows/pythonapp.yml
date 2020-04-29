@@ -21,6 +21,7 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install -r requirements.txt
     - name: Lint with pylint
+      if: ${{ matrix.python-version >= 3 }}
       run: |
         pip install pylint
         pylint judge.py
