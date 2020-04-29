@@ -27,4 +27,4 @@ jobs:
         pylint judge.py
     - name: Smoke test
       run: |
-        python judge.py demo && python judge.py judge
+        python judge.py && python judge.py answer.hdf result.csv
