@@ -2,10 +2,10 @@
 '''
 Compare result with answer.
 '''
-import argparse
 import csv
 import json
 import os
+import sys
 import warnings
 
 import pandas as pd
@@ -122,8 +122,6 @@ def judge(answer_path, result_path, grade_gradient=(100, 20)):
     '''
     Compare the submitted answer with ground truth, with a grade returned.
     '''
-    print('"%s" is to be submitted, judged by "%s"' %
-          (result_path, answer_path))
     message = []
     # 1. Prepare data
     answers, error = _load_answer(answer_path)
@@ -132,9 +130,6 @@ def judge(answer_path, result_path, grade_gradient=(100, 20)):
     results, error = _load_data(result_path)
     if error:
         message.append(error)
-    print('Fault Count: %d. Result Count: %d' %
-          (len(answers), len(results)))
-    print('\n'.join(message))
 
     # 2. Grade
     grade = 0
@@ -145,7 +140,12 @@ def judge(answer_path, result_path, grade_gradient=(100, 20)):
         if rank is not None and rank < len(grade_gradient):
             grade += grade_gradient[rank]
 
-    return grade
+    return {
+        'result': True,
+        'total_fscore': "",
+        'message': '\n'.join(message),
+        'data': grade,
+    }
 
 
 def _dump_answer(data, path):
@@ -204,26 +204,24 @@ def _demo(answer_path, result_path):
     }
     _dump_data(submitted_answer, result_path)
 
-    print('Now, re-run with an action of "judge" to get a grade of 120')
+    print('Now, execute with "python judge.py answer.hdf result.csv" to get a grade of 120')
 
 
 def main():
     '''Entrance'''
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-a', '--answer', dest='answer', type=str,
-                        default='answer.hdf', required=False,
-                        help='File with ground truth.')
-    parser.add_argument('-r', '--result', dest='result', type=str,
-                        default='result.csv', required=False,
-                        help='File with your answer.')
-    parser.add_argument('action', choices=['judge', 'demo'],
-                        help='Choose "demo" for demonstration.')
-    parameters = parser.parse_args()
+    if len(sys.argv) < 3:
+        action = 'demo'
+        answer = 'answer.hdf'
+        result = 'result.csv'
+    else:
+        action = 'judge'
+        answer = sys.argv[1]
+        result = sys.argv[2]
 
-    if parameters.action == 'demo':
-        _demo(parameters.answer, parameters.result)
-    elif parameters.action == 'judge':
-        print('Grade: %d' % (judge(parameters.answer, parameters.result), ))
+    if action == 'demo':
+        _demo(answer, result)
+    elif action == 'judge':
+        print(json.dumps(judge(answer, result)))
 
 
 if __name__ == '__main__':
