@@ -8,8 +8,6 @@ import os
 import sys
 import warnings
 
-import pandas as pd
-
 
 def _upper(item):
     if not item:
@@ -67,17 +65,10 @@ def _load_answer(path):
     data = {}
     message = ''
     try:
-        if path.endswith('.hdf'):
-            reader = pd.read_hdf(path)
-            for _, (fault_id, category, cmdb_id, candidate) in reader.iterrows():
-                if fault_id not in data:
-                    data[fault_id] = Answer(category, cmdb_id, [])
-                data[fault_id].candidates.add(_upper(candidate))
-        else:
-            with open(path) as obj:
-                data = json.load(obj)
-                for fault_id in data:
-                    data[fault_id] = Answer(*data[fault_id])
+        with open(path) as obj:
+            data = json.load(obj)
+            for fault_id in data:
+                data[fault_id] = Answer(*data[fault_id])
     except:  # pylint: disable=bare-except
         message = 'Failed to parse "%s"' % (path, )
 
@@ -150,19 +141,8 @@ def _dump_answer(data, path):
     if os.path.exists(path):
         warnings.warn('"%s" already exsits' % (path, ))
         return False
-    if path.endswith('.hdf'):
-        columns = ['fault_id', 'category', 'cmdb_id', 'index']
-        target = []
-        for fault_id in data:
-            category, cmdb_id, candidates = data[fault_id]
-            for candidate in candidates:
-                target.append([str(fault_id), category, cmdb_id, candidate])
-        target = pd.DataFrame(target, columns=columns)
-        target.to_hdf(path, key='fault_id')
-    else:
-        # Default json
-        with open(path, 'w') as obj:
-            json.dump(data, obj, indent=2)
+    with open(path, 'w') as obj:
+        json.dump(data, obj, indent=2)
     return True
 
 
@@ -209,7 +189,7 @@ def main(argv):
     '''Entrance'''
     if len(argv) < 3:
         action = 'demo'
-        answer = 'answer.hdf'
+        answer = 'answer.json'
         result = 'result.csv'
     else:
         action = 'judge'

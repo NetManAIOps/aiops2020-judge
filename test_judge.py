@@ -11,7 +11,6 @@ import judge
 
 @pytest.mark.parametrize(('answer_path', 'result_path', 'expectation'), [
     (os.path.join('answer', 'answer-0411.json'), 'sample_result.csv', 120),
-    (os.path.join('answer', 'answer-0411.hdf'), 'sample_result.csv', 120),
     ('nonexistent_answer.json', 'nonexisstent_result.json', 0),
 ])
 def test_judge(answer_path, result_path, expectation):
