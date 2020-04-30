@@ -26,5 +26,7 @@ jobs:
         pylint judge.py
     - name: Unit test
       run: |
-        python -m pip install pytest
-        pytest
+        python -m pip install pytest coverage
+        coverage run --source=judge -m pytest
+    - name: Coveralls
+      uses: AndreMiras/coveralls-python-action@develop
