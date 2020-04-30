@@ -182,7 +182,7 @@ def _demo(answer_path, result_path):
     }
     _dump_data(submitted_answer, result_path)
 
-    print('Now, execute with "python judge.py answer.hdf result.csv" to get a grade of 120')
+    print('Now, execute with "python judge.py answer.json result.csv" to get a grade of 120')
 
 
 def main(argv):
