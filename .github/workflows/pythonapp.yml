@@ -25,6 +25,7 @@ jobs:
       run: |
         pip install pylint
         pylint judge.py
-    - name: Smoke test
+    - name: Unit test
       run: |
-        python judge.py && python judge.py answer.hdf result.csv
+        python -m pip install pytest
+        pytest

@@ -207,22 +207,24 @@ def _demo(answer_path, result_path):
     print('Now, execute with "python judge.py answer.hdf result.csv" to get a grade of 120')
 
 
-def main():
+def main(argv):
     '''Entrance'''
-    if len(sys.argv) < 3:
+    if len(argv) < 3:
         action = 'demo'
         answer = 'answer.hdf'
         result = 'result.csv'
     else:
         action = 'judge'
-        answer = sys.argv[1]
-        result = sys.argv[2]
+        answer = argv[1]
+        result = argv[2]
 
     if action == 'demo':
         _demo(answer, result)
     elif action == 'judge':
         print(json.dumps(judge(answer, result)))
 
+    return answer, result, action
+
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv)
