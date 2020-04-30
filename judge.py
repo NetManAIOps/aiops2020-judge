@@ -12,11 +12,9 @@ import pandas as pd
 
 
 def _upper(item):
-    if item == '':
+    if not item:
         return None
-    if isinstance(item, str):
-        return item.upper()
-    return item
+    return item.upper()
 
 
 class Answer():  # pylint: disable=too-few-public-methods
