@@ -22,7 +22,7 @@ jobs:
     - name: Lint with pylint
       if: ${{ matrix.python-version >= 3 }}
       run: |
-        pip install pylint
+        python -m pip install pylint pytest
         pylint judge.py test_judge.py
     - name: Unit test
       run: |
