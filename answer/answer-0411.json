@@ -28,7 +28,7 @@
         ]
     ],
     "5": [
-        "oracle",
+        "db",
         "db_007",
         [
             "Proc_User_Used_Pct",
@@ -72,7 +72,7 @@
         ]
     ],
     "11": [
-        "oracle",
+        "db",
         "db_003",
         [
             "On_Off_State",
