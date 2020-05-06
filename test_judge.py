@@ -9,6 +9,21 @@ import pytest
 import judge
 
 
+def test_dump_result(storage):
+    '''
+    Test judge._dump_data
+    '''
+    data = {
+        3: [('db', 'db_003', None), ('db', 'db_003', 'User_Commit')],
+    }
+    filename = os.path.join(storage, 'test_dump_result.csv')
+    judge._dump_data(data, filename)  # pylint: disable=protected-access
+    with open(filename) as obj:
+        lines = obj.read().strip().split('\n')
+        # one row for header and two rows of answer
+        assert len(lines) == 3
+
+
 @pytest.mark.parametrize(('answer_path', 'result_path', 'expectation'), [
     (os.path.join('answer', 'answer-0411.json'), 'sample_result.csv', 120),
     ('nonexistent_answer.json', 'nonexisstent_result.json', 0),

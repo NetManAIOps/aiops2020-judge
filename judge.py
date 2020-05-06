@@ -150,7 +150,10 @@ def _dump_data(data, path):
     if os.path.exists(path):
         warnings.warn('"%s" already exsits' % (path, ))
         return False
-    with open(path, 'w') as obj:
+    options = {'mode': 'w', }
+    if sys.version_info.major == 3:
+        options['newline'] = ''
+    with open(path, **options) as obj:
         if path.endswith('.csv'):
             columns = ['fault_id', 'rank', 'category', 'cmdb_id', 'index']
             writer = csv.writer(obj)
