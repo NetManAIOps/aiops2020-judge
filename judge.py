@@ -135,7 +135,7 @@ def judge(answer_path, result_path, grade_gradient=(100, 20)):
         'result': True,
         'total_fscore': "",
         'message': '\n'.join(message),
-        'data': grade,
+        'data': round(grade, 4),
     }
 
 
