@@ -25,13 +25,13 @@ def test_dump_result(storage):
 
 
 @pytest.mark.parametrize(('answer_path', 'result_path', 'expectation'), [
-    (os.path.join('answer', 'answer-0411.json'), 'sample_result.csv', 120),
+    (os.path.join('answer', 'answer-0411.json'), 'sample_result.csv', 10.9),
     ('nonexistent_answer.json', 'nonexisstent_result.json', 0),
 ])
 def test_judge(answer_path, result_path, expectation):
     '''Test judge.judge'''
     ret = judge.judge(answer_path, result_path)
-    assert ret['data'] == expectation, ret['message']
+    assert abs(ret['data'] - expectation) < 0.1, ret['message']
 
 
 def test_function(capsys):
@@ -39,7 +39,7 @@ def test_function(capsys):
     Test judge.main
 
     Sample data is supposed to be created with insufficient arguments.
-    Judging the created sample data is supposed to get a grade of 120.
+    Judging the created sample data is supposed to get a grade of 30.
     '''
     cmd = 'judge.py'
     iters = 2  # Verify idempotence
@@ -54,7 +54,7 @@ def test_function(capsys):
         assert action == 'judge'
         captured = capsys.readouterr()
         ret = json.loads(captured.out)
-        assert ret['data'] == 120, ret['message']
+        assert ret['data'] == 30, ret['message']
 
     result_path = 'result.json'
     judge._demo(answer_path, result_path)  # pylint: disable=protected-access
@@ -64,4 +64,4 @@ def test_function(capsys):
     assert action == 'judge'
     captured = capsys.readouterr()
     ret = json.loads(captured.out)
-    assert ret['data'] == 120, ret['message']
+    assert ret['data'] == 30, ret['message']

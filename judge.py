@@ -129,6 +129,8 @@ def judge(answer_path, result_path, grade_gradient=(100, 20)):
         if rank is not None and rank < len(grade_gradient):
             grade += grade_gradient[rank]
 
+    if answers:
+        grade = grade / len(answers)
     return {
         'result': True,
         'total_fscore': "",
@@ -185,7 +187,7 @@ def _demo(answer_path, result_path):
     }
     _dump_data(submitted_answer, result_path)
 
-    print('Now, execute with "python judge.py %s %s" to get a grade of 120' %
+    print('Now, execute with "python judge.py %s %s" to get a grade of 30' %
           (answer_path, result_path))
 
 
