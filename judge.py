@@ -121,7 +121,7 @@ def judge(answer_path, result_path, grade_gradient=(100, 20)):
         message.append(error)
 
     # 2. Grade
-    grade = 0
+    grade = 0.0
     for i in answers:
         if i not in results:
             continue
