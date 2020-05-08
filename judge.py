@@ -187,7 +187,7 @@ def _demo(answer_path, result_path):
     }
     _dump_data(submitted_answer, result_path)
 
-    print('Now, execute with "python judge.py %s %s" to get a grade of 30' %
+    print('Now, execute with "python judge.py %s %s" to get a grade of 0.3' %
           (answer_path, result_path))
 
 
@@ -205,7 +205,7 @@ def main(argv):
     if action == 'demo':
         _demo(answer, result)
     elif action == 'judge':
-        print(json.dumps(judge(answer, result)))
+        print(json.dumps(judge(answer, result, grade_gradient=(1.0, 0.2))))
 
     return answer, result, action
 

@@ -30,7 +30,7 @@ def test_dump_result(storage):
 ])
 def test_judge(answer_path, result_path, expectation):
     '''Test judge.judge'''
-    ret = judge.judge(answer_path, result_path)
+    ret = judge.judge(answer_path, result_path, grade_gradient=(100, 20))
     assert ret['data'] == pytest.approx(expectation, 0.1), ret['message']
 
 
@@ -54,7 +54,7 @@ def test_function(capsys):
         assert action == 'judge'
         captured = capsys.readouterr()
         ret = json.loads(captured.out)
-        assert ret['data'] == pytest.approx(30, 0.1), ret['message']
+        assert ret['data'] == pytest.approx(0.3, 1e-4), ret['message']
 
     result_path = 'result.json'
     judge._demo(answer_path, result_path)  # pylint: disable=protected-access
@@ -64,4 +64,4 @@ def test_function(capsys):
     assert action == 'judge'
     captured = capsys.readouterr()
     ret = json.loads(captured.out)
-    assert ret['data'] == pytest.approx(30, 0.1), ret['message']
+    assert ret['data'] == pytest.approx(0.3, 1e-4), ret['message']
