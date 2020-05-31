@@ -83,7 +83,8 @@ def _load_data(path):
             if path.endswith('.csv'):
                 reader = csv.reader(obj)
                 next(reader)  # header
-                for fault_id, rank, category, cmdb_id, index in reader:
+                for row in reader:
+                    fault_id, rank, category, cmdb_id, index = (row + [''] * 5)[:5]
                     if fault_id not in data:
                         data[fault_id] = []
                     data[fault_id].append((rank, Result(category, cmdb_id, index)))
@@ -96,6 +97,7 @@ def _load_data(path):
                     data[fault_id] = [Result(*item) for item in data[fault_id]]
     except:  # pylint: disable=bare-except
         message = 'Failed to parse "%s"' % (path, )
+        data = {}
     return data, message
 
 

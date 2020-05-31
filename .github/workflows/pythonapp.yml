@@ -30,5 +30,5 @@ jobs:
         python -m pip install pytest coverage
         coverage run --source=judge --branch -m pytest
     - name: Coveralls
-      if: ${{ runner.os != 'Windows' }}
+      if: ${{ runner.os != 'Windows' && matrix.python-version >= 3 }}
       uses: AndreMiras/coveralls-python-action@develop
