@@ -9,6 +9,9 @@ import pytest
 import judge
 
 
+BASE_DIR = os.path.dirname(os.path.realpath(__file__))
+
+
 def test_dump_result(storage):
     '''
     Test judge._dump_data
@@ -25,7 +28,8 @@ def test_dump_result(storage):
 
 
 @pytest.mark.parametrize(('answer_path', 'result_path', 'expectation'), [
-    (os.path.join('answer', 'answer-0411.json'), 'sample_result.csv', 10.9),
+    (os.path.join(BASE_DIR, 'answer', 'answer-0411.json'),
+     os.path.join(BASE_DIR, 'sample_result.csv'), 10.9),
     ('nonexistent_answer.json', 'nonexisstent_result.json', 0),
 ])
 def test_judge(answer_path, result_path, expectation):

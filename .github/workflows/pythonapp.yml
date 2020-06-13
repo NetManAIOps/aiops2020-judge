@@ -24,7 +24,7 @@ jobs:
       if: ${{ matrix.python-version >= 3 }}
       run: |
         python -m pip install pylint pytest
-        pylint judge.py test_judge.py conftest.py
+        pylint preliminary final
     - name: Unit test
       run: |
         python -m pip install pytest coverage
