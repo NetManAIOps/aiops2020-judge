@@ -2,6 +2,7 @@
 '''
 Compare result with answer.
 '''
+import datetime
 import json
 import sys
 import warnings
@@ -44,6 +45,11 @@ def _parse_indices(indices):
     return {(cmdb_id, index) for cmdb_id, index in indices}
 
 
+def _get_timestamp(date):
+    date -= datetime.datetime(year=1970, month=1, day=1, tzinfo=dateutil.tz.UTC)
+    return date.total_seconds()
+
+
 def _load_answer(path):
     data = []
     with open(path) as obj:
@@ -62,7 +68,9 @@ def _load_data(path):
                 continue
             try:
                 sep = line.index(' ')
-                timestamp = dateutil.parser.parse(line[:sep]).timestamp()
+                # Work in python3 only
+                # timestamp = dateutil.parser.parse(line[:sep]).timestamp()
+                timestamp = _get_timestamp(dateutil.parser.parse(line[:sep]))
                 data.append((timestamp, _parse_indices(json.loads(line[sep:]))))
             except:  # pylint: disable=bare-except
                 warnings.warn('Failed to parse "%s"' % (line.strip(), ))

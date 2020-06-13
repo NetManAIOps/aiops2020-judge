@@ -24,7 +24,7 @@ SAMPLE_RESULT = os.path.join(BASE_DIR, 'sample_result.log')
 def test_judge(quota, expectation):
     '''Test judge.judge'''
     grade = judge.judge(SAMPLE_ANSWER, SAMPLE_RESULT, quota=quota, window=WINDOW)
-    assert grade == pytest.approx(expectation, 0.1)
+    assert grade == pytest.approx(expectation, 1e-4)
 
 
 def test_function():
