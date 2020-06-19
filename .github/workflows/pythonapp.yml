@@ -25,6 +25,7 @@ jobs:
       if: ${{ matrix.python-version >= 3 }}
       run: |
         python -m pip install pylint pytest
+        python -m pip install -r final/example/requirements.txt
         pylint preliminary && pylint final
     - name: Unit test
       run: |
