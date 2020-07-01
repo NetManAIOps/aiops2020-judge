@@ -18,11 +18,14 @@
 4. 计算故障平均定位时间。
    - 执行`python judge.py answer.json aiops.log`进行评分，其中`answer.json`为标准答案。
    - `sample_answer.json`和`sample_result.log`分别提供了标准答案和容器输出的样例。
+5. 为多个队伍打分。
+   - 执行`python assemble.py --answer sample_answer.json --result-dir result --team-list team.csv`获得不同队伍的分数。
+   - 使用`--score`参数选择不同的评分方式。
 
 ## Tips
 
 - 注意需要**换行**和**刷新缓冲区**。
   - 不刷新缓冲区可能会使记录的提交时间严重滞后。
-- 可以额外启动Docker镜像来提供数据库等服务。
-  - 可以在[DockerHub](https://hub.docker.com/search?type=image)上获得官方镜像，如[postgres](https://hub.docker.com/_/postgres)，并单独启动。
-  - 可以在[DockerHub](https://hub.docker.com/search?type=image)上获得镜像，如[python](https://hub.docker.com/_/python)，以此为基础构建镜像而不必从[ubuntu](https://hub.docker.com/_/ubuntu)镜像开始。
+- 可以在[DockerHub](https://hub.docker.com/search?type=image)上获得镜像，例如
+  - 额外启动[postgres](https://hub.docker.com/_/postgres)来提供数据库服务。
+  - 以[python](https://hub.docker.com/_/python)为基础构建镜像而不必从[ubuntu](https://hub.docker.com/_/ubuntu)镜像开始。
