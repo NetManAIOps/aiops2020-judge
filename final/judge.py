@@ -25,11 +25,7 @@ class Result():  # pylint: disable=too-few-public-methods
         submitted_at = None
         target = None
 
-        # Find the first answer which is after the given time
-        while self._quota > 0 and self._index < self._total \
-                and self._data[self._index][0] < timestamp:
-            self._index += 1
-            self._quota -= 1
+        self._quota -= self.move(timestamp)
 
         while self._quota > 0 and self._index < self._total \
                 and self._data[self._index][0] <= timestamp + self._window:
@@ -38,6 +34,15 @@ class Result():  # pylint: disable=too-few-public-methods
             self._quota -= 1
 
         return submitted_at, target
+
+    def move(self, timestamp):
+        '''Move to the first answer after given time'''
+        quota = 0
+        while self._index < self._total \
+                and self._data[self._index][0] < timestamp:
+            self._index += 1
+            quota += 1
+        return quota
 
 
 def _parse_indices(indices):
@@ -51,13 +56,15 @@ def _get_timestamp(date):
 
 
 def _load_answer(path):
-    data = []
+    answers = []
     with open(path) as obj:
-        for timestamp, indices in json.load(obj):
-            data.append((int(timestamp), _parse_indices(indices)))
+        data = json.load(obj)
+        start_time = data['startTime']
+        for timestamp, indices in data['data']:
+            answers.append((int(timestamp), _parse_indices(indices)))
 
-    data.sort(key=lambda item: item[0])
-    return data
+    answers.sort(key=lambda item: item[0])
+    return start_time, answers
 
 
 def _load_data(path):
@@ -84,8 +91,9 @@ def judge(answer_path, result_path, quota=24, window=10 * 60):
     Compare the submitted answer with ground truth, with a grade returned.
     '''
     # 1. Prepare data
-    answers = _load_answer(answer_path)
+    start_time, answers = _load_answer(answer_path)
     results = Result(_load_data(result_path), quota=quota, window=window)
+    _ = results.move(start_time)
 
     # 2. Grade
     grade = 0.0
