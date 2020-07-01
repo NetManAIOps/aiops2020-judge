@@ -95,21 +95,35 @@ def judge(answer_path, result_path, quota=24, window=10 * 60):
     results = Result(_load_data(result_path), quota=quota, window=window)
     _ = results.move(start_time)
 
-    # 2. Grade
-    grade = 0.0
+    # 2. Summary
+    data = []
 
     for timestamp, indices in answers:
         submitted_at, result = results.find(timestamp)
-        if not result or not result <= indices:
+        num = len(indices)
+        if not result:
+            data.append((6 * 60 * 60, 0, 0, num))
+        else:
+            data.append((submitted_at - timestamp,
+                         len(result),
+                         len(result.intersection(indices)),
+                         num))
+
+    return data
+
+
+def score(results):
+    '''Convert the output of judge as a single grade.'''
+    grade = 0.0
+    for interval, submitted, correct, num in results:
+        if correct == 0 or correct < submitted:
             # No answer or any wrong index
             grade += 6 * 60 * 60  # 6 hours
         else:
-            recall = float(len(result)) / len(indices)
-            grade += (submitted_at - timestamp) / recall
-
-    if answers:
-        grade /= len(answers)
-
+            recall = float(correct) / num
+            grade += interval / recall
+    if results:
+        grade /= len(results)
     return grade
 
 
@@ -122,7 +136,7 @@ def main(argv):
     result = argv[2]
     print(answer, result)
 
-    grade = '%.04f minutes / fault' % (judge(answer, result) / 60, )
+    grade = '%.04f minutes / fault' % (score(judge(answer, result)) / 60, )
     print(grade)
 
 
