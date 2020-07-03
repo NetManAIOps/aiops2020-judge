@@ -9,7 +9,7 @@ import warnings
 import judge
 
 
-def rank(data, size):
+def rank(data, size, beta):  # pylint: disable=too-many-locals
     '''
     For each fault, a team gets grade based on ranking among teams.
     '''
@@ -21,13 +21,14 @@ def rank(data, size):
             time, submitted, correct, num = data[team][i]
             correct = float(correct)
             if submitted and correct / submitted >= 0.5:  # precision >= 0.5
-                recall = correct / num
-                time /= recall
-            turn.append((team, time))
+                # f beta score
+                factor = (1 + beta) * correct / (submitted + beta * num)
+                time /= factor
+                turn.append((team, time))
         turn.sort(key=lambda item: item[1])
         j = 0
         grade = 10
-        num = len(data)
+        num = len(turn)
         while j < num and grade > 0:
             team, time = turn[j]
             current_grade = grade
@@ -42,7 +43,7 @@ def rank(data, size):
     return score
 
 
-def fscore(data, size):
+def fscore(data, size, beta):
     '''
     For each fault, a team gets grade based on f-score.
     '''
@@ -52,9 +53,12 @@ def fscore(data, size):
         for team in data:
             time, submitted, correct, num = data[team][i]
             correct = float(correct)
-            if submitted:
-                factor = 2 * correct / (submitted + num)
+            if correct:
+                # f beta score
+                factor = (1 + beta) * correct / (submitted + beta * num)
                 time /= factor
+            else:
+                time = 6 * 60 * 60
             score[team] += time
     return score
 
@@ -69,8 +73,9 @@ def main():
     parser.add_argument('--result-dir', dest='result', type=str,
                         default='result', required=False)
     parser.add_argument('--answer', type=str, required=True)
-    parser.add_argument('--score', choices=['rank', 'f1-score'],
+    parser.add_argument('--score', choices=['rank', 'fscore'],
                         default='rank', required=False)
+    parser.add_argument('--beta', type=float, default=0.5, required=False)
     parameters = parser.parse_args()
 
     data = {}
@@ -92,11 +97,12 @@ def main():
         warnings.warn('Results vary in size!')
         return
     size = size.pop()
+    beta = parameters.beta ** 2
 
     if parameters.score == 'rank':
-        print(rank(data, size))
+        print(rank(data, size, beta))
     else:
-        print(fscore(data, size))
+        print(fscore(data, size, beta))
 
 
 if __name__ == '__main__':
