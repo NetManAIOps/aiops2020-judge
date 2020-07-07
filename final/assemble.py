@@ -26,6 +26,7 @@ class FBetaScore():  # pylint: disable=too-few-public-methods
         if not correct or not submitted or not num:
             return 0.0
 
+        correct = float(correct)
         precision = correct / submitted
         recall = correct / num
         return (1 + self.beta) / (1 / precision + self.beta / recall)
