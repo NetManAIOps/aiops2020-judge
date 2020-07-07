@@ -9,7 +9,29 @@ import warnings
 import judge
 
 
-def rank(data, size, beta):  # pylint: disable=too-many-locals
+class FBetaScore():  # pylint: disable=too-few-public-methods
+    '''
+    Calculate F-beta-score.
+    '''
+
+    def __init__(self, beta):
+        self.beta = beta ** 2
+
+    def calculate(self, correct, submitted, num):
+        '''
+        correct: number of correct answers among submitted ones
+        submitted: number of submitted answers
+        num: number of standard answers, which are ground truth
+        '''
+        if not correct or not submitted or not num:
+            return 0.0
+
+        precision = correct / submitted
+        recall = correct / num
+        return (1 + self.beta) / (1 / precision + self.beta / recall)
+
+
+def rank(data, size, scorer):
     '''
     For each fault, a team gets grade based on ranking among teams.
     '''
@@ -21,9 +43,7 @@ def rank(data, size, beta):  # pylint: disable=too-many-locals
             time, submitted, correct, num = data[team][i]
             correct = float(correct)
             if submitted and correct / submitted >= 0.5:  # precision >= 0.5
-                # f beta score
-                factor = (1 + beta) * correct / (submitted + beta * num)
-                time /= factor
+                time /= scorer.calculate(correct, submitted, num)
                 turn.append((team, time))
         turn.sort(key=lambda item: item[1])
         j = 0
@@ -43,7 +63,7 @@ def rank(data, size, beta):  # pylint: disable=too-many-locals
     return score
 
 
-def fscore(data, size, beta):
+def fscore(data, size, scorer):
     '''
     For each fault, a team gets grade based on f-score.
     '''
@@ -54,9 +74,7 @@ def fscore(data, size, beta):
             time, submitted, correct, num = data[team][i]
             correct = float(correct)
             if correct:
-                # f beta score
-                factor = (1 + beta) * correct / (submitted + beta * num)
-                time /= factor
+                time /= scorer.calculate(correct, submitted, num)
             else:
                 time = 6 * 60 * 60
             score[team] += time
@@ -97,12 +115,12 @@ def main():
         warnings.warn('Results vary in size!')
         return
     size = size.pop()
-    beta = parameters.beta ** 2
+    scorer = FBetaScore(parameters.beta)
 
     if parameters.score == 'rank':
-        print(rank(data, size, beta))
+        print(rank(data, size, scorer))
     else:
-        print(fscore(data, size, beta))
+        print(fscore(data, size, scorer))
 
 
 if __name__ == '__main__':
