@@ -21,19 +21,18 @@ class Result():  # pylint: disable=too-few-public-methods
         self._window = window
 
     def find(self, timestamp):
-        '''Find answer for the fault which arises at given time'''
-        submitted_at = None
-        target = None
-
+        '''Find answers for the fault which arises at given time'''
         self._quota -= self.move(timestamp)
 
+        data = []
         while self._quota > 0 and self._index < self._total \
                 and self._data[self._index][0] <= timestamp + self._window:
             submitted_at, target = self._data[self._index]
+            data.append((submitted_at, target))
             self._index += 1
             self._quota -= 1
 
-        return submitted_at, target
+        return data
 
     def move(self, timestamp):
         '''Move to the first answer after given time'''
@@ -99,15 +98,11 @@ def judge(answer_path, result_path, quota=24, window=10 * 60):
     data = []
 
     for timestamp, indices in answers:
-        submitted_at, result = results.find(timestamp)
         num = len(indices)
-        if not result:
-            data.append((6 * 60 * 60, 0, 0, num))
-        else:
-            data.append((submitted_at - timestamp,
-                         len(result),
-                         len(result.intersection(indices)),
-                         num))
+        data.append([(submitted_at - timestamp,
+                      len(result),
+                      len(result.intersection(indices)),
+                      num) for submitted_at, result in results.find(timestamp)])
 
     return data
 
@@ -115,7 +110,13 @@ def judge(answer_path, result_path, quota=24, window=10 * 60):
 def score(results):
     '''Convert the output of judge as a single grade.'''
     grade = 0.0
-    for interval, submitted, correct, num in results:
+    for window_results in results:
+        if window_results:
+            # Get the last one
+            interval, submitted, correct, num = window_results[-1]
+        else:
+            correct = 0
+
         if correct == 0 or correct < submitted:
             # No answer or any wrong index
             grade += 6 * 60 * 60  # 6 hours

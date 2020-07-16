@@ -9,6 +9,9 @@ import warnings
 import judge
 
 
+DEFAULT_TIME = 6 * 60 * 60  # 6 hours
+
+
 class FBetaScore():  # pylint: disable=too-few-public-methods
     '''
     Calculate F-beta-score.
@@ -32,7 +35,7 @@ class FBetaScore():  # pylint: disable=too-few-public-methods
         return (1 + self.beta) / (1 / precision + self.beta / recall)
 
 
-def rank(data, size, scorer):
+def rank(data, size, scorer, selector):
     '''
     For each fault, a team gets grade based on ranking among teams.
     '''
@@ -41,17 +44,15 @@ def rank(data, size, scorer):
     for i in range(size):
         turn = []
         for team in data:
-            time, submitted, correct, num = data[team][i]
-            correct = float(correct)
-            if submitted and correct / submitted >= 0.5:  # precision >= 0.5
-                time /= scorer.calculate(correct, submitted, num)
-                turn.append((team, time))
+            turn.append((team, selector([scorer(*item) for item in data[team][i]])))
         turn.sort(key=lambda item: item[1])
         j = 0
         grade = 10
         num = len(turn)
         while j < num and grade > 0:
             team, time = turn[j]
+            if time >= DEFAULT_TIME:
+                break
             current_grade = grade
             current_time = time
             while j < num and time == current_time:
@@ -64,7 +65,7 @@ def rank(data, size, scorer):
     return score
 
 
-def fscore(data, size, scorer):
+def fscore(data, size, scorer, selector):
     '''
     For each fault, a team gets grade based on f-score.
     '''
@@ -72,14 +73,39 @@ def fscore(data, size, scorer):
 
     for i in range(size):
         for team in data:
-            time, submitted, correct, num = data[team][i]
-            correct = float(correct)
-            if correct:
-                time /= scorer.calculate(correct, submitted, num)
-            else:
-                time = 6 * 60 * 60
-            score[team] += time
+            score[team] += selector([scorer(*item) for item in data[team][i]])
+    for team in data:
+        score[team] /= size
     return score
+
+
+def _get_last(data):
+    if data:
+        return data[-1]
+    return DEFAULT_TIME
+
+
+def _get_best(data):
+    if data:
+        return min(data)
+    return DEFAULT_TIME
+
+
+def create_scorer(beta):
+    '''
+    Combine f-beta-score with time to detect fault.
+    '''
+    f_scorer = FBetaScore(beta)
+
+    def scorer(time, submitted, correct, num):
+        correct = float(correct)
+        if submitted and correct / submitted >= 0.5:  # precision >= 0.5
+            time /= f_scorer.calculate(correct, submitted, num)
+        else:
+            time = DEFAULT_TIME
+        return time
+
+    return scorer
 
 
 def main():
@@ -94,6 +120,8 @@ def main():
     parser.add_argument('--answer', type=str, required=True)
     parser.add_argument('--score', choices=['rank', 'fscore'],
                         default='rank', required=False)
+    parser.add_argument('--selector', choices=['last', 'best'],
+                        default='last', required=False)
     parser.add_argument('--beta', type=float, default=0.5, required=False)
     parameters = parser.parse_args()
 
@@ -116,12 +144,17 @@ def main():
         warnings.warn('Results vary in size!')
         return
     size = size.pop()
-    scorer = FBetaScore(parameters.beta)
+    scorer = create_scorer(parameters.beta)
+
+
+    selector = _get_last
+    if parameters.selector == 'best':
+        selector = _get_best
 
     if parameters.score == 'rank':
-        print(rank(data, size, scorer))
+        print(rank(data, size, scorer, selector))
     else:
-        print(fscore(data, size, scorer))
+        print(fscore(data, size, scorer, selector))
 
 
 if __name__ == '__main__':
