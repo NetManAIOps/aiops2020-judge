@@ -3,6 +3,7 @@
 Judge for teams.
 '''
 import argparse
+import math
 import os
 import warnings
 
@@ -91,6 +92,19 @@ def _get_best(data):
     return DEFAULT_TIME
 
 
+def trunc(value, base, minimum):
+    '''
+    Reserve precision for float.
+
+    value: float
+    base: the given precision
+    '''
+    value = math.ceil(value / base) * base
+    if value < minimum:
+        value = minimum
+    return value
+
+
 def create_scorer(beta):
     '''
     Combine f-beta-score with time to detect fault.
@@ -101,6 +115,7 @@ def create_scorer(beta):
         correct = float(correct)
         if submitted and correct / submitted >= 0.5:  # precision >= 0.5
             time /= f_scorer.calculate(correct, submitted, num)
+            time = trunc(time / correct, 10, 0)
         else:
             time = DEFAULT_TIME
         return time
